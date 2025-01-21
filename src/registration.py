@@ -10,7 +10,7 @@ class Registration(Window):
         self.rects = {'surf': pygame.Rect(0, 0, 1920, 1080),
                       'fox': pygame.Rect(240, 140, 256, 285),
                       'text_surf_login': pygame.Rect(480, 420, 312, 67),
-                      'text_surf_passw': pygame.Rect(480, 520, 312, 67)
+                      'text_surf_passw': pygame.Rect(480, 620, 312, 67)
                       }
 
         self.image_1 = pygame.image.load('../data/window_login.png')
@@ -38,7 +38,7 @@ class Registration(Window):
                                                    pygame.Color('white'))
 
         self.text_position_login = (575, 435)
-        self.text_position_passw = (480, 535)
+        self.text_position_passw = (480, 635)
 
     def draw(self):
         self.screen.blit(self.image_1, self.rects.get('surf').topleft)

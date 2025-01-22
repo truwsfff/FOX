@@ -15,7 +15,7 @@ class Registration(Window):
                       'text_input_passw': pygame.Rect(480, 720, 993, 66),
                       'button_next': pygame.Rect(715, 805, 500, 150),
                       'type_sign_in': pygame.Rect(1030, 135, 312, 67),
-                      'type_sign_up': pygame.Rect(1380, 135, 312, 67)
+                      'type_sign_up': pygame.Rect(1380, 135, 312, 67),
                       }
 
         self.image_1 = pygame.image.load('../data/window_login.png')
@@ -70,15 +70,17 @@ class Registration(Window):
                                                    pygame.Color('white'))
         self.text_surface_next = self.font_button.render('Далее', True,
                                                          pygame.Color('white'))
-        self.text_type_in = self.font_button.render('Войти', True,
-                                                    pygame.Color('white'))
-        self.text_text_up = self.font_button.render('Зарегистрироваться',
-                                                    True,
-                                                    pygame.Color('white'))
+        self.text_type_in = self.font.render('Войти', True,
+                                             pygame.Color('white'))
+        self.text_type_up = self.font.render('Регистрация',
+                                             True,
+                                             pygame.Color('white'))
 
         self.text_position_login = (575, 435)
         self.text_position_passw = (570, 635)
         self.text_position_next = (858, 850)
+        self.text_type_in_position = (1130, 150)
+        self.text_type_up_position = (1417, 150)
 
     def draw(self):
         self.screen.blit(self.image_1, self.rects.get('surf').topleft)
@@ -101,3 +103,5 @@ class Registration(Window):
         self.screen.blit(self.text_surface_login, self.text_position_login)
         self.screen.blit(self.text_surface_passw, self.text_position_passw)
         self.screen.blit(self.text_surface_next, self.text_position_next)
+        self.screen.blit(self.text_type_in, self.text_type_in_position)
+        self.screen.blit(self.text_type_up, self.text_type_up_position)

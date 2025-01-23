@@ -7,6 +7,14 @@ class Registration(Window):
     def __init__(self, screen):
         super().__init__(screen)
         pygame.display.set_caption('Регистрация')
+
+        self.flag_input_login = False
+        self.flag_input_passw = False
+
+        self.validator = '\
+        абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyz0123456789_'
+        self.password = ''
+
         self.rects = {'surf': pygame.Rect(0, 0, 1920, 1080),
                       'fox': pygame.Rect(240, 140, 256, 285),
                       'text_surf_login': pygame.Rect(480, 420, 312, 67),
@@ -68,9 +76,9 @@ class Registration(Window):
                                                    pygame.Color('white'))
         self.text_surface_passw = self.font.render('Пароль', True,
                                                    pygame.Color('white'))
-        self.text_surface_next = self.font_button.render('Далее', True,
+        self.text_surface_next = self.font_button.render('Вход', True,
                                                          pygame.Color('white'))
-        self.text_type_in = self.font.render('Войти', True,
+        self.text_type_in = self.font.render('Вход', True,
                                              pygame.Color('white'))
         self.text_type_up = self.font.render('Регистрация',
                                              True,
@@ -78,9 +86,32 @@ class Registration(Window):
 
         self.text_position_login = (575, 435)
         self.text_position_passw = (570, 635)
-        self.text_position_next = (858, 850)
-        self.text_type_in_position = (1130, 150)
+        self.text_position_next = (885, 850)
+        self.text_type_in_position = (1145, 150)
         self.text_type_up_position = (1417, 150)
+
+    def handle_events(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.rects.get('button_next').collidepoint(event.pos):
+                print('переход в меню')
+            if self.rects.get('text_input_login').collidepoint(event.pos):
+                print('кнопка ввода логина')
+                self.flag_input_login = True
+            else:
+                self.flag_input_login = False
+            if self.rects.get('text_input_passw').collidepoint(event.pos):
+                print('кнопка ввода пароля')
+                self.flag_input_passw = True
+            else:
+                self.flag_input_passw = False
+            if self.rects.get('type_sign_in').collidepoint(event.pos):
+                print('режим входа')
+            if self.rects.get('type_sign_up').collidepoint(event.pos):
+                print('режим регистрации')
+        if event.type == pygame.KEYDOWN:
+            if pygame.key.name(event.key) in self.validator:
+                self.password += pygame.key.name(event.key)
+                print(self.password)
 
     def draw(self):
         self.screen.blit(self.image_1, self.rects.get('surf').topleft)
@@ -105,3 +136,15 @@ class Registration(Window):
         self.screen.blit(self.text_surface_next, self.text_position_next)
         self.screen.blit(self.text_type_in, self.text_type_in_position)
         self.screen.blit(self.text_type_up, self.text_type_up_position)
+
+    def validator_check(self, login):
+        # список разрешенных символов
+        self.validator = '\
+    абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyz0123456789_'
+        # логин должен быть также не менее 4 символов и не более 15
+        if len(login) < 4 or len(login) > 15:
+            return False
+        for i in login:
+            if i.lower() not in self.validator:
+                return False
+        return True

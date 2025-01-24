@@ -3,6 +3,10 @@ import pygame
 from src.window import Window
 
 
+class LoginError(Exception):
+    pass
+
+
 class Registration(Window):
     def __init__(self, screen):
         super().__init__(screen)
@@ -11,6 +15,7 @@ class Registration(Window):
         self.flag_input_login = False
         self.flag_input_passw = False
         self.status_in_or_up = False  # человек регистрируется или входит
+        self.status_passw = True  # пароль скрыт изначально
 
         self.validator = '\
         abcdefghijklmnopqrstuvwxyz0123456789'
@@ -29,6 +34,7 @@ class Registration(Window):
                       'button_next': pygame.Rect(715, 805, 500, 150),
                       'type_sign_in': pygame.Rect(1030, 135, 312, 67),
                       'type_sign_up': pygame.Rect(1380, 135, 312, 67),
+                      'show_passw': pygame.Rect(830, 620, 312, 67)
                       }
 
         self.image_1 = pygame.image.load('../data/window_login.png')
@@ -74,9 +80,15 @@ class Registration(Window):
             self.rects.get('type_sign_up').width,
             self.rects.get('type_sign_up').height))
 
+        self.image_10 = pygame.image.load('../data/surf_for_text.png')
+        pygame.transform.scale(self.image_10, (
+            self.rects.get('show_passw').width,
+            self.rects.get('show_passw').height))
+
         self.font = pygame.font.Font('../data/HomeVideo-Regular.otf', 36)
         self.font_button = pygame.font.Font('../data/HomeVideo-Regular.otf',
                                             70)
+
         self.text_surface_login = self.font.render('Логин', True,
                                                    pygame.Color('white'))
         self.text_surface_passw = self.font.render('Пароль', True,
@@ -92,6 +104,10 @@ class Registration(Window):
                                            pygame.Color('white'))
         self.text_passw = self.font.render('', True,
                                            pygame.Color('white'))
+        self.text_show_passw = self.font.render('Показать', True,
+                                                pygame.Color('white'))
+        self.text_error = self.font.render('', True,
+                                           pygame.Color('red'))
 
         self.text_position_login = (575, 435)
         self.text_position_passw = (570, 635)
@@ -100,11 +116,21 @@ class Registration(Window):
         self.text_type_up_position = (1417, 150)
         self.text_login_inp = (506, 534)
         self.text_passw_inp = (500, 729)
+        self.text_show = (895, 635)
+        self.text_error_pos = (0, 0)
 
     def handle_events(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.rects.get('button_next').collidepoint(event.pos):
-                print('переход в меню')
+                if self.validator_check(self.login):
+                    print('переход в меню')
+                else:
+                    self.text_error = self.font.render('\
+В логине русские буквы/не в диапазоне 4 <= x <= 15',
+                                                       True,
+                                                       pygame.Color('red'))
+                    self.text_error_pos = (485, 370)
+
             if self.rects.get('text_input_login').collidepoint(event.pos):
                 print('кнопка ввода логина')
                 if self.flag_input_passw:
@@ -112,6 +138,7 @@ class Registration(Window):
                 self.flag_input_login = True
             else:
                 self.flag_input_login = False
+
             if self.rects.get('text_input_passw').collidepoint(event.pos):
                 print('кнопка ввода пароля')
                 if self.flag_input_login:
@@ -119,12 +146,14 @@ class Registration(Window):
                 self.flag_input_passw = True
             else:
                 self.flag_input_passw = False
+
             if self.rects.get('type_sign_in').collidepoint(event.pos):
                 print('режим входа')
                 self.text_surface_next = self.font_button.render('Вход', True,
                                                                  pygame.Color(
                                                                      'white'))
                 self.text_position_next = (885, 850)
+
             if self.rects.get('type_sign_up').collidepoint(event.pos):
                 print('режим регистрации')
                 self.text_surface_next = self.font_button.render('Регистрация',
@@ -132,24 +161,29 @@ class Registration(Window):
                                                                  pygame.Color(
                                                                      'white'))
                 self.text_position_next = (735, 850)
-        if event.type == pygame.KEYDOWN:
-            if pygame.key.name(event.key) in self.validator or pygame.key.name(
-                    event.key) == 'backspace' or pygame.key.name(
-                    event.key) == 'space':
-                if self.flag_input_login:
-                    print(pygame.key.name(event.key))
-                    if pygame.key.name(event.key) == 'backspace':
-                        if self.login != '':
-                            self.login = self.login[0:-1]
-                    elif pygame.key.name(event.key) == 'space':
-                        self.login += ' '
-                    else:
-                        self.login += pygame.key.name(event.key)
-                    self.text_login = self.font.render(self.login, True,
-                                                       pygame.Color('white'))
 
-                if self.flag_input_passw:
-                    self.password += pygame.key.name(event.key)
+            if self.rects.get('show_passw').collidepoint(event.pos):
+                if self.status_passw:
+                    self.status_passw = False
+                else:
+                    self.status_passw = True
+
+        if event.type == pygame.KEYDOWN:
+            if self.flag_input_login:
+                if pygame.key.name(event.key) == 'backspace':
+                    self.login = self.login[:-1]
+                else:
+                    if len(self.login) < 40:
+                        self.login += event.unicode
+                self.text_login = self.font.render(self.login, True,
+                                                   pygame.Color('white'))
+
+            if self.flag_input_passw:
+                if pygame.key.name(event.key) == 'backspace':
+                    self.password = self.password[:-1]
+                else:
+                    if len(self.password) < 40:
+                        self.password += event.unicode
 
     def draw(self):
         self.screen.blit(self.image_1, self.rects.get('surf').topleft)
@@ -168,6 +202,8 @@ class Registration(Window):
                          self.rects.get('type_sign_in').topleft)
         self.screen.blit(self.image_9,
                          self.rects.get('type_sign_up').topleft)
+        self.screen.blit(self.image_10,
+                         self.rects.get('show_passw').topleft)
 
         self.screen.blit(self.text_surface_login, self.text_position_login)
         self.screen.blit(self.text_surface_passw, self.text_position_passw)
@@ -176,6 +212,8 @@ class Registration(Window):
         self.screen.blit(self.text_type_up, self.text_type_up_position)
         self.screen.blit(self.text_login, self.text_login_inp)
         self.screen.blit(self.text_passw, self.text_passw_inp)
+        self.screen.blit(self.text_show_passw, self.text_show)
+        self.screen.blit(self.text_error, self.text_error_pos)
 
         if self.flag_input_login:
             pygame.draw.line(self.screen, pygame.Color('black'),
@@ -185,6 +223,20 @@ class Registration(Window):
             pygame.draw.line(self.screen, pygame.Color('black'),
                              (self.passw_x1, 729),
                              (self.passw_x2, 775), 5)
+
+        if self.status_passw:
+            self.text_show_passw = self.font.render('Показать', True,
+                                                    pygame.Color('white'))
+            self.text_show = (895, 635)
+            self.text_passw = self.font.render('*' * len(self.password),
+                                               True,
+                                               pygame.Color('white'))
+        if not self.status_passw:
+            self.text_show_passw = self.font.render('Скрыть', True,
+                                                    pygame.Color('white'))
+            self.text_show = (920, 635)
+            self.text_passw = self.font.render(self.password, True,
+                                               pygame.Color('white'))
 
     def validator_check(self, login):
         # логин должен быть также не менее 4 символов и не более 15

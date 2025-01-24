@@ -1,13 +1,12 @@
-from src.registration import Registration
-
-
 class WindowManager:
     def __init__(self, screen):
         self.screen = screen
         self.windows = {
-            'registration': Registration(screen)
         }
         self.current_window = None
+
+    def add_window(self, name, value):
+        self.windows[name] = value
 
     def set_window(self, name):
         self.current_window = self.windows.get(name)

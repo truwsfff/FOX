@@ -2,8 +2,9 @@ import pygame
 
 
 class Window:
-    def __init__(self, screen):
+    def __init__(self, screen, manager):
         self.screen = screen
+        self.window_man = manager
         self.clock = None
 
     def handle_events(self, event):

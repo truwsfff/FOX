@@ -7,9 +7,13 @@ class LoginError(Exception):
     pass
 
 
+class PasswordError(Exception):
+    pass
+
+
 class Registration(Window):
-    def __init__(self, screen):
-        super().__init__(screen)
+    def __init__(self, screen, manager):
+        super().__init__(screen, manager)
         pygame.display.set_caption('Регистрация')
 
         self.flag_input_login = False
@@ -122,11 +126,23 @@ class Registration(Window):
     def handle_events(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.rects.get('button_next').collidepoint(event.pos):
-                if self.validator_check(self.login):
-                    print('переход в меню')
-                else:
+                try:
+                    if self.login == '' or not self.validator_check(
+                            self.login):
+                        raise LoginError
+                    if self.password == '' or len(self.password) < 5:
+                        raise PasswordError
+                    self.window_man.set_window('menu')
+                    self.window_man.run()
+                except LoginError:
                     self.text_error = self.font.render('\
 В логине русские буквы/не в диапазоне 4 <= x <= 15',
+                                                       True,
+                                                       pygame.Color('red'))
+                    self.text_error_pos = (485, 370)
+                except PasswordError:
+                    self.text_error = self.font.render('\
+Пароль содержит менее 5 символов',
                                                        True,
                                                        pygame.Color('red'))
                     self.text_error_pos = (485, 370)

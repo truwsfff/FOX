@@ -1,6 +1,7 @@
 import pygame
 
 from src.registration import Registration
+from src.settings import Settings
 from src.window_manager import WindowManager
 from src.menu import Menu
 
@@ -11,7 +12,8 @@ def main():
     manager = WindowManager(screen)
     manager.add_window('registration', Registration(screen, manager))
     manager.add_window('menu', Menu(screen, manager))
-    manager.set_window('registration')
+    manager.add_window('settings', Settings(screen, manager))
+    manager.set_window('settings')
     manager.run()
 
 

@@ -1,9 +1,9 @@
 import pygame
 
-from src.registration import Registration
-from src.settings import Settings
-from src.window_manager import WindowManager
-from src.menu import Menu
+from registration import Registration
+from settings import Settings
+from window_manager import WindowManager
+from menu import Menu
 
 
 def main():

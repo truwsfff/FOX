@@ -1,6 +1,6 @@
 import pygame
 
-from src.window import Window
+from window import Window
 
 
 class LoginError(Exception):

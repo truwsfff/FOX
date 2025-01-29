@@ -30,4 +30,4 @@ class Window:
             self.screen.fill((0, 0, 0))
             self.draw()
             pygame.display.flip()
-            self.clock.tick(90)
+            self.clock.tick(60)

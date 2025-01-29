@@ -10,7 +10,7 @@ class Book(Window):
 
         self.words = ['FOX', 'FOXY', 'FOXTROT']
         self.rects = {
-            'exit': pygame.Rect(30, 30, 80, 80),
+            'exit': pygame.Rect(30, 30, 107, 107),
             'bg': pygame.Rect(0, 0, 1920, 1080)
         }
 

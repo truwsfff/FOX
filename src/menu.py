@@ -68,13 +68,17 @@ class Menu(Window):
         self.text_play = self.font_2.render('Играть', True,
                                             pygame.Color('white'))
 
-    def handle_event(self, event):
+    def handle_events(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            if self.rects.get('settings').collidepoint(event.pos):
-                self.window_man.set_window('book')  # не готова
+            if self.rects.get('book').collidepoint(event.pos):
+                self.window_man.set_window('book')
+                self.window_man.run()
             if self.rects.get('settings').collidepoint(event.pos):
                 self.window_man.set_window('settings')
-                self.run()
+                self.window_man.run()
+            if self.rects.get('description').collidepoint(event.pos):
+                self.window_man.set_window('description')
+                self.window_man.run()
 
     def draw(self):
         self.screen.blit(self.bg_image, (0, 0))

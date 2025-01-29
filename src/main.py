@@ -3,6 +3,7 @@ import ctypes
 
 from registration import Registration
 from settings import Settings
+from description import Description
 from window_manager import WindowManager
 from menu import Menu
 from book import Book
@@ -17,7 +18,8 @@ def main():
     manager.add_window('menu', Menu(screen, manager))
     manager.add_window('settings', Settings(screen, manager))
     manager.add_window('book', Book(screen, manager))
-    manager.set_window('book')
+    manager.add_window('description', Description(screen, manager))
+    manager.set_window('menu')
     manager.run()
 
 

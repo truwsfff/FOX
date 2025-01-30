@@ -1,7 +1,9 @@
 import pygame
+import os
+import sys
 from design import Design
 from window import Window
-from design_game import PlayGame
+from game import PlayGame
 
 
 class StandaloneMenu(Window):
@@ -19,8 +21,16 @@ class StandaloneMenu(Window):
         }
         print(type(self.design.side_buttons), self.design.side_buttons)
 
+        self.all_sprites = pygame.sprite.Group()
+        self.dragon = AnimatedSprite(self.load_image("fox_animation.png"), 3,
+                                     1,
+                                     1200,
+                                     750, self.all_sprites)
+
     def draw(self):
         self.design.draw(self.screen)
+        self.all_sprites.update()  # Добавляем обновление анимации
+        self.all_sprites.draw(self.screen)  # Отрисовываем спрайты
         pygame.display.flip()
 
     def handle_events(self, event):
@@ -47,7 +57,23 @@ class StandaloneMenu(Window):
             self.window_man.set_window('book')
             self.window_man.run()
         elif action == 'Game Description':
-            pass
+            self.window_man.set_window('description')
+            self.window_man.run()
+
+    def load_image(self, name, colorkey=-1):
+        fullname = os.path.join('../data/images/', name)
+        if not os.path.isfile(fullname):
+            print(f"Файл с изображением '{fullname}' не найден")
+            sys.exit()
+        image = pygame.image.load(fullname)
+        if colorkey is not None:
+            image = image.convert()
+            if colorkey == -1:
+                colorkey = image.get_at((0, 0))
+            image.set_colorkey(colorkey)
+        else:
+            image = image.convert_alpha()
+        return image
 
     def run(self):
         running = True
@@ -55,3 +81,26 @@ class StandaloneMenu(Window):
             for event in pygame.event.get():
                 self.handle_events(event)
             self.draw()
+
+
+class AnimatedSprite(pygame.sprite.Sprite):
+    def __init__(self, sheet, columns, rows, x, y, grp):
+        super().__init__(grp)
+        self.frames = []
+        self.cut_sheet(sheet, columns, rows)
+        self.cur_frame = 0
+        self.image = self.frames[self.cur_frame]
+        self.rect = self.rect.move(x, y)
+
+    def cut_sheet(self, sheet, columns, rows):
+        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                                sheet.get_height() // rows)
+        for j in range(rows):
+            for i in range(columns):
+                frame_location = (self.rect.w * i, self.rect.h * j)
+                self.frames.append(sheet.subsurface(pygame.Rect(
+                    frame_location, self.rect.size)))
+
+    def update(self):
+        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
+        self.image = self.frames[self.cur_frame]

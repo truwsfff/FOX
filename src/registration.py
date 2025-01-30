@@ -18,8 +18,8 @@ class Registration(Window):
 
         self.flag_input_login = False
         self.flag_input_passw = False
-        self.status_in_or_up = False  # человек регистрируется или входит
-        self.status_passw = True  # пароль скрыт изначально
+        self.status_in_or_up = False
+        self.status_passw = True
 
         self.validator = '\
         abcdefghijklmnopqrstuvwxyz0123456789'
@@ -258,7 +258,6 @@ class Registration(Window):
                                                pygame.Color('white'))
 
     def validator_check(self, login):
-        # логин должен быть также не менее 4 символов и не более 15
         if len(login) < 4 or len(login) > 15:
             return False
         for i in login:

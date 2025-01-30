@@ -1,6 +1,7 @@
 import pygame
 from design import Design
 from window import Window
+from design_game import PlayGame
 
 
 class StandaloneMenu(Window):
@@ -12,10 +13,11 @@ class StandaloneMenu(Window):
         self.design = Design()
         self.buttons = {
             'Play': self.design.play_button,
-            'Settings': self.design.side_buttons['SETTINGS'],
-            'Book': self.design.side_buttons['BOOK'],
-            'Game Description': self.design.side_buttons['GAME DESCRIPTION']
+            'Settings': self.design.side_buttons['SETTINGS']['rect'],
+            'Book': self.design.side_buttons['BOOK']['rect'],
+            'Game Description': self.design.side_buttons['GAME DESCRIPTION']['rect']
         }
+        print(type(self.design.side_buttons), self.design.side_buttons)
 
     def draw(self):
         self.design.draw(self.screen)
@@ -35,13 +37,17 @@ class StandaloneMenu(Window):
 
     def perform_action(self, action):
         if action == 'Play':
-            print("Запуск игры (заглушка)")
+            self.window_man.add_window('play', PlayGame(self.screen, self.window_man))
+            self.window_man.set_window('play')
+            self.window_man.run()
         elif action == 'Settings':
-            print("Открываем настройки (заглушка)")
+            self.window_man.set_window('settings')
+            self.window_man.run()
         elif action == 'Book':
-            print("Открываем книгу (заглушка)")
+            self.window_man.set_window('book')
+            self.window_man.run()
         elif action == 'Game Description':
-            print("Открываем описание игры (заглушка)")
+            pass
 
     def run(self):
         running = True
@@ -49,8 +55,3 @@ class StandaloneMenu(Window):
             for event in pygame.event.get():
                 self.handle_events(event)
             self.draw()
-
-
-if __name__ == "__main__":
-    menu = StandaloneMenu()
-    menu.run()

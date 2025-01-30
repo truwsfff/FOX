@@ -17,7 +17,7 @@ class Design:
         self.text_rect = pygame.Rect(480, 216, 100, 500)
         self.play_button = pygame.Rect(598, 816, 750, 235)
         self.side_buttons = {
-            "SETTINGS":  {"rect": pygame.Rect(1510, 248, 400, 113), "image": self.settings_button_img},
+            "SETTINGS": {"rect": pygame.Rect(1510, 248, 400, 113), "image": self.settings_button_img},
             "BOOK": {"rect": pygame.Rect(1510, 375, 400, 113), "image": self.book_button_img},
             "GAME DESCRIPTION": {"rect": pygame.Rect(1510, 500, 400, 113), "image": self.creators_button_img}
         }
@@ -30,6 +30,7 @@ class Design:
         self.text_3 = self.font_min.render('BOOK', True, pygame.Color('white'))
         self.text_4 = self.font_min_m.render('GAME DESCRIPTION', True, pygame.Color('white'))
         self.text_5 = self.font_min_mm.render('Play', True, pygame.Color('white'))
+
     def draw(self, screen):
         screen.blit(self.bg_image, (0, 0))
         screen.blit(self.fox_image, self.fox_rect.topleft)
@@ -42,5 +43,3 @@ class Design:
         screen.blit(self.text_3, pygame.Rect(1600, 400, 400, 113))
         screen.blit(self.text_4, pygame.Rect(1550, 540, 400, 113))
         screen.blit(self.text_5, pygame.Rect(825, 870, 400, 113))
-
-

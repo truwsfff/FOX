@@ -4,6 +4,8 @@ from registration import Registration
 from settings import Settings
 from window_manager import WindowManager
 from menu import StandaloneMenu
+from book import BookScreen
+from design_game import PlayGame
 
 
 def main():
@@ -13,6 +15,8 @@ def main():
     manager.add_window('registration', Registration(screen, manager))
     manager.add_window('menu', StandaloneMenu(screen, manager))
     manager.add_window('settings', Settings(screen, manager))
+    manager.add_window('book', BookScreen(screen, manager))
+    manager.add_window('play', PlayGame(screen, manager))
     manager.set_window('menu')
     manager.run()
 

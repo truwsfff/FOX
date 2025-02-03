@@ -13,11 +13,11 @@ class Description(Window):
             'bg': pygame.Rect(0, 0, 1920, 1080)
         }
 
-        self.image_1 = pygame.image.load('../data/description_ru.png')
+        self.image_1 = pygame.image.load('../data/images/description_ru.png')
         pygame.transform.scale(self.image_1, (
             self.rects.get('bg').width, self.rects.get('bg').height))
 
-        self.image_2 = pygame.image.load('../data/x_exit.png')
+        self.image_2 = pygame.image.load('../data/images/x_exit.png')
         pygame.transform.scale(self.image_2, (
             self.rects.get('exit').width, self.rects.get('exit').height))
 

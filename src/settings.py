@@ -9,34 +9,35 @@ class Settings(Window):
         pygame.display.set_caption('Настройки')
 
         self.rects = {
-            'line': pygame.Rect(725, 300, 450, 15),
-            'circle': pygame.Rect(725, 291, 30, 30),
+            'line': pygame.Rect(725, 500, 450, 15),
+            'circle': pygame.Rect(725, 491, 30, 30),
             'surf': pygame.Rect(0, 0, 1920, 1080),
-            'exit': pygame.Rect(30, 30, 107, 107)
+            'exit': pygame.Rect(215, 125, 107, 107)
         }
 
         self.moving = False
         self.x = self.rects.get('circle').topleft[0]
         self.x_n = 0
 
-        self.image_1 = pygame.image.load('../data/line_pg1.png')
+        self.image_1 = pygame.image.load('../data/images/line_pg1.png')
         pygame.transform.scale(self.image_1, (
             self.rects.get('line').width, self.rects.get('line').height))
 
-        self.image_2 = pygame.image.load('../data/circle_pg.png')
+        self.image_2 = pygame.image.load('../data/images/circle_pg.png')
         pygame.transform.scale(self.image_2, (
             self.rects.get('circle').width, self.rects.get('circle').height))
 
-        self.image_3 = pygame.image.load('../data/bg.png')
+        self.image_3 = pygame.image.load('../data/images/bg.png')
         pygame.transform.scale(self.image_1, (
             self.rects.get('surf').width, self.rects.get('surf').height))
 
-        self.image_4 = pygame.image.load('../data/x_exit.png')
+        self.image_4 = pygame.image.load('../data/images/x_exit.png')
         pygame.transform.scale(self.image_1, (
             self.rects.get('exit').width, self.rects.get('exit').height))
 
-        self.font = pygame.font.Font('../data/HomeVideo-Regular.otf', 60)
-        self.font_1 = pygame.font.Font('../data/HomeVideo-Regular.otf', 120)
+        self.font = pygame.font.Font('../data/font/HomeVideo-Regular.otf', 42)
+        self.font_1 = pygame.font.Font('../data/font/HomeVideo-Regular.otf',
+                                       120)
 
         self.text_music = self.font.render('Музыка', True,
                                            pygame.Color('white'))
@@ -56,7 +57,11 @@ class Settings(Window):
                 self.x_n = event.rel[0]
                 if 710 <= self.x + self.x_n <= 1160:
                     self.x = self.x + self.x_n
-                    self.rects['circle'] = pygame.Rect(self.x, 291, 30, 30)
+                    self.rects['circle'] = pygame.Rect(self.x, 491, 30, 30)
+                    if (self.x - 710) % 45 == 0:
+                        pygame.mixer.music.set_volume(
+                            ((self.x - 710) / 45) / 10)
+
         if event.type == pygame.MOUSEBUTTONUP:
             self.moving = False
 
@@ -65,6 +70,5 @@ class Settings(Window):
         self.screen.blit(self.image_1, self.rects.get('line').topleft)
         self.screen.blit(self.image_2, self.rects.get('circle').topleft)
         self.screen.blit(self.image_4, self.rects.get('exit').topleft)
-        self.screen.blit(self.text_music, (850, 200))
-        self.screen.blit(self.text_settings,
-                         (self.screen.get_width() // 2 - 320, 50))
+        self.screen.blit(self.text_music, (880, 400))
+        self.screen.blit(self.text_settings, (643, 170))

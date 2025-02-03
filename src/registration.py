@@ -1,6 +1,14 @@
 import pygame
+import sqlite3
 
+from game1 import PlayGame1
 from window import Window
+from settings import Settings
+from description import Description
+from game import PlayGame
+from book import BookScreen
+from start_window import StartWin
+from menu import Menu
 
 
 class LoginError(Exception):
@@ -15,11 +23,13 @@ class Registration(Window):
     def __init__(self, screen, manager):
         super().__init__(screen, manager)
         pygame.display.set_caption('Регистрация')
+        self.con = sqlite3.connect('../FoxDB.db')
+        self.cur = self.con.cursor()
 
         self.flag_input_login = False
         self.flag_input_passw = False
-        self.status_in_or_up = False  # человек регистрируется или входит
-        self.status_passw = True  # пароль скрыт изначально
+        self.status_in_or_up = False  # False - вход, True - регистрация
+        self.status_passw = True
 
         self.validator = '\
         abcdefghijklmnopqrstuvwxyz0123456789'
@@ -41,57 +51,58 @@ class Registration(Window):
                       'show_passw': pygame.Rect(830, 620, 312, 67)
                       }
 
-        self.image_1 = pygame.image.load('../data/window_login.png')
+        self.image_1 = pygame.image.load('../data/images/window_login.png')
         pygame.transform.scale(self.image_1, (
             self.rects.get('surf').width, self.rects.get('surf').height))
 
-        self.image_2 = pygame.image.load('../data/fox.png')
+        self.image_2 = pygame.image.load('../data/images/fox.png')
         pygame.transform.scale(self.image_1, (
             self.rects.get('surf').width, self.rects.get('surf').height))
 
-        self.image_3 = pygame.image.load('../data/surf_for_text.png')
+        self.image_3 = pygame.image.load('../data/images/surf_for_text.png')
         pygame.transform.scale(self.image_3, (
             self.rects.get('text_surf_login').width,
             self.rects.get('text_surf_login').height))
 
-        self.image_4 = pygame.image.load('../data/surf_for_text.png')
+        self.image_4 = pygame.image.load('../data/images/surf_for_text.png')
         pygame.transform.scale(self.image_4, (
             self.rects.get('text_surf_passw').width,
             self.rects.get('text_surf_passw').height))
 
-        self.image_5 = pygame.image.load('../data/input.png')
+        self.image_5 = pygame.image.load('../data/images/input.png')
         pygame.transform.scale(self.image_5, (
             self.rects.get('text_input_login').width,
             self.rects.get('text_input_login').height))
 
-        self.image_6 = pygame.image.load('../data/input.png')
+        self.image_6 = pygame.image.load('../data/images/input.png')
         pygame.transform.scale(self.image_6, (
             self.rects.get('text_input_passw').width,
             self.rects.get('text_input_passw').height))
 
-        self.image_7 = pygame.image.load('../data/button.png')
+        self.image_7 = pygame.image.load('../data/images/button.png')
         pygame.transform.scale(self.image_7, (
             self.rects.get('button_next').width,
             self.rects.get('button_next').height))
 
-        self.image_8 = pygame.image.load('../data/surf_for_text.png')
+        self.image_8 = pygame.image.load('../data/images/surf_for_text.png')
         pygame.transform.scale(self.image_8, (
             self.rects.get('type_sign_in').width,
             self.rects.get('type_sign_in').height))
 
-        self.image_9 = pygame.image.load('../data/surf_for_text.png')
+        self.image_9 = pygame.image.load('../data/images/surf_for_text.png')
         pygame.transform.scale(self.image_9, (
             self.rects.get('type_sign_up').width,
             self.rects.get('type_sign_up').height))
 
-        self.image_10 = pygame.image.load('../data/surf_for_text.png')
+        self.image_10 = pygame.image.load('../data/images/surf_for_text.png')
         pygame.transform.scale(self.image_10, (
             self.rects.get('show_passw').width,
             self.rects.get('show_passw').height))
 
-        self.font = pygame.font.Font('../data/HomeVideo-Regular.otf', 36)
-        self.font_button = pygame.font.Font('../data/HomeVideo-Regular.otf',
-                                            70)
+        self.font = pygame.font.Font('../data/font/HomeVideo-Regular.otf', 36)
+        self.font_button = pygame.font.Font(
+            '../data/font/HomeVideo-Regular.otf',
+            70)
 
         self.text_surface_login = self.font.render('Логин', True,
                                                    pygame.Color('white'))
@@ -132,20 +143,62 @@ class Registration(Window):
                         raise LoginError
                     if self.password == '' or len(self.password) < 5:
                         raise PasswordError
-                    self.window_man.set_window('menu')
-                    self.window_man.run()
                 except LoginError:
                     self.text_error = self.font.render('\
 В логине русские буквы/не в диапазоне 4 <= x <= 15',
                                                        True,
                                                        pygame.Color('red'))
-                    self.text_error_pos = (485, 370)
+                    return
                 except PasswordError:
                     self.text_error = self.font.render('\
 Пароль содержит менее 5 символов',
                                                        True,
                                                        pygame.Color('red'))
-                    self.text_error_pos = (485, 370)
+                    return
+
+                if self.status_in_or_up:
+                    try:
+                        self.cur.execute(
+                            '''\
+INSERT INTO users(login, password, easy, hard) VALUES(?, ?, ?, ?)''',
+                            (self.login.upper(), self.password.upper(), 0, 0))
+                    except sqlite3.IntegrityError:
+                        self.text_error = self.font.render('\
+Данный логин уже существует', True, pygame.Color('red'))
+                        return
+                else:
+                    info = self.cur.execute('''\
+SELECT login, password FROM users 
+WHERE login = ?''', (self.login.upper(),)).fetchone()
+                    if info is None:
+                        self.text_error = self.font.render('\
+Аккаунт не найден', True, pygame.Color('red'))
+                        return
+                    if info[1] != self.password.upper():
+                        self.text_error = self.font.render('\
+Неверный пароль', True, pygame.Color('red'))
+                        return
+                self.window_man.add_window('menu',
+                                           Menu(self.screen, self.window_man))
+                self.window_man.add_window('settings', Settings(self.screen,
+                                                                self.window_man))
+                self.window_man.add_window('book', BookScreen(self.screen,
+                                                              self.window_man))
+                self.window_man.add_window('description',
+                                           Description(self.screen,
+                                                       self.window_man))
+                self.window_man.add_window('game', PlayGame(self.screen,
+                                                            self.window_man,
+                                                            self.login.upper()))
+                self.window_man.add_window('startwin', StartWin(self.screen,
+                                                                self.window_man,
+                                                                self.login.upper()))
+                self.window_man.add_window('game1', PlayGame1(self.screen,
+                                                              self.window_man,
+                                                              self.login.upper()))
+                self.window_man.set_window('menu')
+                self.con.commit()
+                self.window_man.run()
 
             if self.rects.get('text_input_login').collidepoint(event.pos):
                 print('кнопка ввода логина')
@@ -169,6 +222,7 @@ class Registration(Window):
                                                                  pygame.Color(
                                                                      'white'))
                 self.text_position_next = (885, 850)
+                self.status_in_or_up = False
 
             if self.rects.get('type_sign_up').collidepoint(event.pos):
                 print('режим регистрации')
@@ -177,6 +231,7 @@ class Registration(Window):
                                                                  pygame.Color(
                                                                      'white'))
                 self.text_position_next = (735, 850)
+                self.status_in_or_up = True
 
             if self.rects.get('show_passw').collidepoint(event.pos):
                 if self.status_passw:
@@ -200,6 +255,9 @@ class Registration(Window):
                 else:
                     if len(self.password) < 40:
                         self.password += event.unicode
+
+            if event.key == pygame.K_ESCAPE:
+                self.show_exit_dialog(self.screen)
 
     def draw(self):
         self.screen.blit(self.image_1, self.rects.get('surf').topleft)
@@ -255,7 +313,6 @@ class Registration(Window):
                                                pygame.Color('white'))
 
     def validator_check(self, login):
-        # логин должен быть также не менее 4 символов и не более 15
         if len(login) < 4 or len(login) > 15:
             return False
         for i in login:

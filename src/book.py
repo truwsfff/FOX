@@ -1,32 +1,30 @@
 import pygame
-
 from window import Window
 
 
-class Book(Window):
+class BookScreen(Window):
     def __init__(self, screen, manager):
         super().__init__(screen, manager)
-        pygame.display.set_caption('Книга')
+        pygame.display.set_caption("Книга")
 
-        self.words = ['FOX', 'FOXY', 'FOXTROT']
+        self.bg_color = (10, 20, 50)
+        self.text_color = (255, 255, 255)
+        self.button_color = (150, 150, 150)
+
+        self.font = pygame.font.Font('../data/font/HomeVideo-Regular.otf', 80)
+        self.small_font = pygame.font.Font(
+            '../data/font/HomeVideo-Regular.otf', 60)
+
         self.rects = {
-            'exit': pygame.Rect(30, 30, 107, 107),
-            'bg': pygame.Rect(0, 0, 1920, 1080)
+            'exit': pygame.Rect(30, 30, 80, 80)
         }
 
-        self.image_1 = pygame.image.load('../data/x_exit.png')
-        pygame.transform.scale(self.image_1, (
-            self.rects.get('exit').width, self.rects.get('exit').height))
+        self.exit_button = pygame.image.load("../data/images/x_exit.png")
+        pygame.transform.scale(self.exit_button, (80, 80))
 
-        self.image_2 = pygame.image.load('../data/bg.png')
-        pygame.transform.scale(self.image_2, (
-            self.rects.get('bg').width, self.rects.get('bg').height))
-
-        self.font = pygame.font.Font('../data/HomeVideo-Regular.otf', 120)
-        self.font_1 = pygame.font.Font('../data/HomeVideo-Regular.otf', 60)
-
-        self.title = self.font.render('Книга', True,
-                                      pygame.Color(255, 255, 255))
+        self.title_text = "BOOK"
+        self.words = ["FOX", "FOXY", "FOXTROT", "FOXTUKO", "FOXMAXO",
+                      "FOXMARON"]
 
     def handle_events(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -35,12 +33,15 @@ class Book(Window):
                 self.window_man.run()
 
     def draw(self):
-        self.screen.blit(self.image_2, self.rects.get('bg').topleft)
-        self.screen.blit(self.image_1, self.rects.get('exit').topleft)
-        self.screen.blit(self.title, (self.screen.get_width() // 2 - 172, 50))
+        self.screen.fill(self.bg_color)
 
-        y_coord = 200
-        for i in self.words:
-            self.screen.blit(self.font.render(i, True, pygame.Color('white')),
-                             (100, y_coord))
-            y_coord += 130
+        title = self.font.render(self.title_text, True, self.text_color)
+        self.screen.blit(title, (self.screen.get_width() // 2 - 100, 50))
+
+        y_offset = 200
+        for word in self.words:
+            text_surface = self.small_font.render(word, True, self.text_color)
+            self.screen.blit(text_surface, (100, y_offset))
+            y_offset += 100
+
+        self.screen.blit(self.exit_button, self.rects.get('exit').topleft)
